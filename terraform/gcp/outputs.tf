@@ -1,24 +1,34 @@
-# This file defines output variables for the Terraform configuration.
-# These outputs are used to expose specific values from the infrastructure setup,
-# making them accessible for other Terraform configurations or external systems.
-# 
-# Usage:
-# - The `redis_ip_address` output provides the IP address of the Redis instance
-#   created using Google Cloud's Memorystore service. This can be used to connect
-#   to the Redis instance from other services or applications within the same VPC.
-# - The `postgres_ip_address` output provides the IP address of the PostgreSQL
-#   database instance. This is useful for applications or services that need to
-#   connect to the database for data storage and retrieval.
-# 
-# To access these outputs, use the `terraform output` command after applying the
-# Terraform configuration. For example:
-# 
-#   terraform output redis_ip_address
-#   terraform output postgres_ip_address
-
-output "redis_ip_address" {
-  value = module.memorystore.host
+output "instance_name" {
+  description = "Name of the instance"
+  value       = google_compute_instance.medplum_dev.name
 }
-output "postgres_ip_address" {
-  value = module.sql-db.instance_ip_address[0].ip_address
+
+output "instance_external_ip" {
+  description = "External IP of the instance"
+  value       = google_compute_address.medplum_static_ip.address
+}
+
+output "instance_internal_ip" {
+  description = "Internal IP of the instance"
+  value       = google_compute_instance.medplum_dev.network_interface[0].network_ip
+}
+
+output "ssh_command" {
+  description = "SSH command to connect"
+  value       = "ssh ${var.ssh_user}@${google_compute_address.medplum_static_ip.address}"
+}
+
+output "medplum_api_url" {
+  description = "Medplum API URL"
+  value       = "http://${google_compute_address.medplum_static_ip.address}:8103"
+}
+
+output "medplum_web_url" {
+  description = "Medplum Web App URL"
+  value       = "http://${google_compute_address.medplum_static_ip.address}:3000"
+}
+
+output "vscode_server_url" {
+  description = "VS Code Server URL"
+  value       = "http://${google_compute_address.medplum_static_ip.address}:8080"
 }

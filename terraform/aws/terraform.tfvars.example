@@ -1,0 +1,14 @@
+# Copy this file to terraform.tfvars and fill in your values
+
+aws_region     = "us-east-1"
+instance_type  = "t3.xlarge" # 4 vCPUs, 16 GB RAM
+volume_size    = 100
+key_pair_name  = "my-key-pair" # REQUIRED: Your AWS key pair name
+use_elastic_ip = true
+
+# Security: Restrict to your IP address
+allowed_ssh_cidr = ["YOUR.IP.ADDRESS/32"]
+allowed_app_cidr = ["YOUR.IP.ADDRESS/32"]
+
+# GitHub repository
+github_repo = "https://github.com/medplum/medplum.git"
