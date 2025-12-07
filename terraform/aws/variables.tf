@@ -42,5 +42,5 @@ variable "use_elastic_ip" {
 variable "github_repo" {
   description = "GitHub repository URL for Medplum"
   type        = string
-  default     = "https://github.com/medplum/medplum.git"
+  default     = "https://github.com/healthsailjourney/medplum.git"
 }

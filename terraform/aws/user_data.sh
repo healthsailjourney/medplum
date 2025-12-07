@@ -57,21 +57,26 @@ EOF
 systemctl restart code-server@ubuntu
 
 # Clone Medplum repository
-sudo -u ubuntu bash <<'EOF'
 cd /home/ubuntu
-git clone ${github_repo} medplum
-cd medplum
+sudo -u ubuntu git clone ${github_repo} medplum || true
 
-# Install dependencies (will be done manually or via startup script)
-# This is commented out to avoid timeouts during instance creation
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# npm ci
-# npm run build:fast
+# Get the public IP address
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 
-# Start Docker services
-docker-compose up -d
-EOF
+# Create .env file with correct URLs
+cat > /home/ubuntu/medplum/.env <<ENV_FILE
+MEDPLUM_BASE_URL=http://$PUBLIC_IP:8103/
+MEDPLUM_APP_BASE_URL=http://$PUBLIC_IP:3000/
+MEDPLUM_STORAGE_BASE_URL=http://$PUBLIC_IP:8103/storage/
+ENV_FILE
+
+chown ubuntu:ubuntu /home/ubuntu/medplum/.env
+
+# Start Docker services if docker-compose.yml exists
+if [ -f /home/ubuntu/medplum/docker-compose.full-stack.yml ]; then
+    cd /home/ubuntu/medplum
+    docker-compose -f docker-compose.full-stack.yml up -d || true
+fi
 
 # Create startup script for Medplum
 cat > /home/ubuntu/start-medplum.sh <<'SCRIPT'
